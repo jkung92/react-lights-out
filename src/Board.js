@@ -32,7 +32,7 @@ class Board extends Component {
   static defaultProps = {
     nrows: 5,
     ncols: 5,
-    chanceLightsStartsOn: 0.33
+    chanceLightsStartsOn: 0.25
   };
 
   constructor(props) {
@@ -77,26 +77,25 @@ class Board extends Component {
 
     // TODO: flip this cell and the cells around it
     flipCell(yCoord, xCoord);
+    flipCell(yCoord, xCoord + 1);
+    flipCell(yCoord, xCoord - 1);
+    flipCell(yCoord + 1, xCoord);
+    flipCell(yCoord - 1, xCoord);
+
     // win when every cell is turned off
     // TODO: determine is the game has been won
-    function checkForWin(board) {
-      let hasWon = true;
-      for (let i = 0; i < nrows; i++) {
-        for (let j = 0; j < ncols; j++) {
-          if (board[i][j] === false) {
-            hasWon = false;
-          }
-        }
-      }
-      return hasWon;
-    }
+    let hasWon = board.every(row => row.every(cell => !cell));
 
-    this.setState({ board, hasWon: checkForWin(board) });
+    this.setState({ board, hasWon });
   }
 
   /** Render game board or winning message. */
 
   render() {
+    if (this.state.hasWon) {
+      return <div>You win!!!</div>;
+    }
+
     return (
       <div>
         {this.state.board.map((row, y) => (
@@ -111,7 +110,6 @@ class Board extends Component {
             ))}
           </tr>
         ))}
-        <p>{this.state.hasWon ? `You win!` : ''} </p>
       </div>
     );
     // if the game is won, just show a winning msg & render nothing else
